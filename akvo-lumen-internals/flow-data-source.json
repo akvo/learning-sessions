@@ -1,0 +1,8 @@
+{
+    "name": "My Flow Import",
+    "source": {
+	"kind": "AKVO_FLOW",
+	"instance": "akvoflow-18",
+	"surveyId": 114254118
+    }
+}

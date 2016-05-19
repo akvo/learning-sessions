@@ -1,0 +1,21 @@
+Akvo lumen demo
+
+* "Rest" API
+  * cat headers.sh
+  * ./headers.sh > headers
+  * Can now make authenticated API calls with
+  * curl -s -H "$(cat headers)" http://t1.dash.localhost:3000/api | jq .
+
+* Datasets
+  * Get a list of all datasets
+    * curl -s -H "$(cat headers)" http://t1.dash.localhost:3000/api/datasets | jq .
+  * Import a dataset
+    * curl -s -XPOST -H "$(cat headers)" -d @link-data-source.json http://t1.dash.localhost:3000/api/datasets | jq .
+    * curl -s -XPOST -H "$(cat headers)" -d @flow-data-source.json http://t1.dash.localhost:3000/api/datasets | jq .
+  * Get a single dataset
+    * curl -s -XPOST -H "$(cat headers)" http://t1.dash.localhost:3000/api/datasets/<id> | jq .
+    * jq magic: '{name,created,modified,id,status,columns:[.columns|.[]|{title, type, values:[.values|.[0:2]]}]}'
+
+* Visualisations
+  * Create a visualisation
+    * curl -s -XPOST -H "$(cat headers)" -d @visualisation.json http://t1.dash.localhost:3000/api/visualisations | jq .

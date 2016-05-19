@@ -1,0 +1,8 @@
+{
+    "name": "My First Dataset",
+    "source": {
+	"kind": "LINK",
+	"url": "https://raw.githubusercontent.com/veekun/pokedex/master/pokedex/data/csv/pokemon.csv",
+	"hasColumnHeaders": true
+    }
+}
