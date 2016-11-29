@@ -1,0 +1,5 @@
+[db.default]
+url = "ldb:/tmp/noms"
+
+[db.demo]
+url = "http://demo.noms.io/cli-tour"
