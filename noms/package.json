@@ -1,0 +1,8 @@
+{
+  "name": "noms-demo",
+  "version": "0.0.1",
+  "dependencies": {
+    "@attic/noms": "^64.2.0",
+    "yargs": "^6.4.0"
+  }
+}
