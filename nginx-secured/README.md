@@ -4,7 +4,12 @@
 
 ### Usage
 
-    make build && make run
+* To build the container and start it:
+  * `make build run`
+
+
+* To test a bearer only api call:
+  * `test-bearer.sh <email> <password>`
 
 ### Notes
 
