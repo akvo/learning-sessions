@@ -8,6 +8,5 @@
 
 ### Notes
 
-* You'll get an infinite authentication loop issue because of a
-  __too big__ cookie and the browser will reject to store it:
+* We're using Lua shared directory for sessions becasue of:
   https://github.com/pingidentity/lua-resty-openidc/issues/33
