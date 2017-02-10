@@ -1,0 +1,52 @@
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    server {
+        listen       8082;
+        server_name  localhost;
+        default_type text/html;
+        location / {
+            content_by_lua '
+                ngx.say("<html><body><a href=/start>Start the test</a>!</body></html>")
+            ';
+        }
+        location /start {
+            content_by_lua '
+                local session = require "resty.session".start()
+                session.data.name = "OpenResty Fan"
+                session:save()
+                ngx.say("<html><body>Session started. ",
+                        "<a href=/test>Check if it is working</a>!</body></html>")
+            ';
+        }
+        location /test {
+            content_by_lua '
+                local session = require "resty.session".open()
+                ngx.say("<html><body>Session was started by <strong>",
+                        session.data.name or "Anonymous",
+                        "</strong>! <a href=/destroy>Destroy the session</a>.</body></html>")
+            ';
+        }
+        location /destroy {
+            content_by_lua '
+                local session = require "resty.session".start()
+                session:destroy()
+                ngx.say("<html><body>Session was destroyed. ",
+                        "<a href=/check>Is it really so</a>?</body></html>")
+            ';
+        }
+        location /check {
+            content_by_lua '
+                local session = require "resty.session".open()
+                ngx.say("<html><body>Session was really destroyed, you are known as ",
+                        "<strong>",
+                        session.data.name or "Anonymous",
+                        "</strong>! <a href=/>Start again</a>.</body></html>")
+            ';
+        }
+    }
+}
