@@ -10,6 +10,7 @@
 
 * To test a bearer only api call:
   * `test-bearer.sh <email> <password>`
+  * Notes: The script uses [jq](https://stedolan.github.io/jq/) for parsing the JSON response
 
 ### Notes
 
