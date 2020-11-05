@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-#github_pull() {
-#    curl -H "Accept: application/vnd.github.v3+json"  "https://api.github.com/repos/akvo/akvo-lumen/pulls?state=open" > /tmp/github-pulls.json
-#}
+github_pull() {
+    curl -H "Accept: application/vnd.github.v3+json"  "https://api.github.com/repos/akvo/$1/pulls?state=open" > "/tmp/github-pulls-$1.json"
+}
 
 list_open_pull_requests() {
-    open_prs="$(jq -r .[].html_url github-pulls.json)"
-    echo $open_prs
+    open_prs="$(jq -r .[].html_url /tmp/github-pulls-$1.json)"
+    echo "$open_prs"
 }
 
 post_to_zulip(){
@@ -20,4 +20,5 @@ post_to_zulip(){
          -d "content=$1"
 }
 
-post_to_zulip "$(list_open_pull_requests)"
+github_pull akvo-lumen
+post_to_zulip "$(list_open_pull_requests akvo-lumen)"
