@@ -5,10 +5,12 @@ set -euo pipefail
 # rm -rf /tmp/akvo/github-pull-reminders
 mkdir -p /tmp/akvo/github-pull-reminders
 
+github_fetch() {
+    curl --silent --show-error --fail -H "Accept: application/vnd.github.v3+json" "$1"
+}
+
 download_repos() {
-    curl \
-        -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/orgs/akvo/repos > "/tmp/akvo/github-pull-reminders/repos.json"
+    github_fetch https://api.github.com/orgs/akvo/repos > "/tmp/akvo/github-pull-reminders/repos.json"
 }
 
 create_repos_list() {
@@ -17,9 +19,7 @@ create_repos_list() {
 }
 
 download_open_pulls_for_repo() {
-    curl  \
-         -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/akvo/$1/pulls?state=open" > "/tmp/akvo/github-pull-reminders/pulls-$1.json"
+    github_fetch "https://api.github.com/repos/akvo/$1/pulls?state=open" > "/tmp/akvo/github-pull-reminders/pulls-$1.json"
 }
 
 download_open_pulls_for_all_repos() {
