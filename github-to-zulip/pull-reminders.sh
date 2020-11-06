@@ -58,7 +58,6 @@ post_to_zulip(){
          -u "${ZULIP_TOKEN}" \
          -d 'type=stream' \
          -d 'to=bot-test' \
-         -d 'include_custom_profile_fields=true' \
          -d 'topic=Pull reminder' \
          -d "content=$1"
 }
