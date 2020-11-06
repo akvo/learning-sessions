@@ -2,29 +2,48 @@
 
 set -euo pipefail
 
-rm -rf /tmp/akvo/pull-reminders
-mkdir -p /tmp/akvo/pull-reminders
+# rm -rf /tmp/akvo/github-pull-reminders
+mkdir -p /tmp/akvo/github-pull-reminders
 
-download_github_repos() {
-    curl --silent \
+download_repos() {
+    curl \
         -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/orgs/akvo/repos > "/tmp/akvo/pull-reminders/repos.json"
+        https://api.github.com/orgs/akvo/repos > "/tmp/akvo/github-pull-reminders/repos.json"
 }
 
-list_repos() {
-    repos="$(jq -r '.[].name' /tmp/akvo/pull-reminders/repos.json)"
-    echo "$repos" > "/tmp/akvo/pull-reminders/repos.txt"
+create_repos_list() {
+    repos="$(jq -r '.[].name' /tmp/akvo/github-pull-reminders/repos.json)"
+    echo "$repos" > "/tmp/akvo/github-pull-reminders/repos.txt"
 }
 
-github_pull() {
-    curl --silent \
+download_open_pulls_for_repo() {
+    curl  \
          -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/akvo/$1/pulls?state=open" > "/tmp/akvo/pull-reminders/github-pulls-$1.json"
+         "https://api.github.com/repos/akvo/$1/pulls?state=open" > "/tmp/akvo/github-pull-reminders/pulls-$1.json"
 }
 
-list_open_pull_requests() {
-    open_prs="$(jq -r '.[] | [.title, (.requested_reviewers | map(.login) | join(", ")), .html_url]  | join(" ")' /tmp/akvo/pull-reminders/github-pulls-$1.json)"
-    echo "$open_prs"
+download_open_pulls_for_all_repos() {
+    for repo in $(cat /tmp/akvo/github-pull-reminders/repos.txt)
+    do
+        download_open_pulls_for_repo "$repo"
+        #list_open_pull_requests "$var"
+    done
+}
+
+list_open_pulls_for_repo() {
+    open_prs="$(jq -r '.[] | [.title, (.requested_reviewers | map(.login) | join(", ")), .html_url]  | join(" ")' /tmp/akvo/github-pull-reminders/pulls-$1.json)"
+    if [ ! -z "$open_prs" ]
+    then
+       printf "\n\n### $1\n"
+       printf "$open_prs"
+    fi
+}
+
+list_open_pulls_for_all_repos() {
+    for repo  in $(cat /tmp/akvo/github-pull-reminders/repos.txt)
+    do
+        list_open_pulls_for_repo "$repo"
+    done
 }
 
 post_to_zulip(){
@@ -37,21 +56,8 @@ post_to_zulip(){
          -d "content=$1"
 }
 
-download_github_repos
-list_repos
+download_repos
+create_repos_list
+download_open_pulls_for_all_repos
 
-
-for var in $(cat /tmp/akvo/pull-reminders/repos.txt)
-do
-    github_pull "$var"
-    list_open_pull_requests "$var"
-done
-
-# list_open_pull_requests "$var"
-# list_repos
-
-# post_to_zulip "$(list_open_pull_requests akvo-flow-mobile)"
-
-
-# .[].requested_reviewers | map(.login) | join(", ")
-# jq '.[0] | [.title, .html_url] + .requested_reviewers' /tmp/github-pulls-akvo-lumen.jso
+post_to_zulip "$(list_open_pulls_for_all_repos)"
