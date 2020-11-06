@@ -6,7 +6,14 @@ set -euo pipefail
 mkdir -p /tmp/akvo/github-pull-reminders
 
 github_fetch() {
-    curl --silent --show-error --fail -H "Accept: application/vnd.github.v3+json" "$1"
+    HEADERS=()
+    HEADERS+=("-HAccept: application/vnd.github.v3+json")
+    if [[ -n "${GITHUB_TOKEN}" ]];
+    then
+    HEADERS+=("-HAuthorization: token ${GITHUB_TOKEN}")
+    fi
+    >&2 echo "Fetching data from ${1} ..."
+    curl --silent --show-error --fail "${HEADERS[@]}" "$1"
 }
 
 download_repos() {
