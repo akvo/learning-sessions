@@ -17,7 +17,7 @@ github_fetch() {
 }
 
 download_repos() {
-    github_fetch https://api.github.com/orgs/akvo/repos > "/tmp/akvo/github-pull-reminders/repos.json"
+    github_fetch https://api.github.com/orgs/akvo/repos?per_page=100 > "/tmp/akvo/github-pull-reminders/repos.json"
 }
 
 create_repos_list() {
