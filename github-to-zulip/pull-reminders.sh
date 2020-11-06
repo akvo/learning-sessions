@@ -63,6 +63,13 @@ post_to_zulip(){
          -d "content=$1"
 }
 
+github_username_to_zulip_name() {
+    curl --silent --show-error --fail \
+        --get https://akvo.zulipchat.com/api/v1/users \
+        --user "${ZULIP_TOKEN}" \
+        --data 'include_custom_profile_fields=true' | jq -Mr '.members[]|.profile_data."1925".value+":"+.full_name' > /tmp/akvo/github-pull-reminders/github-to-zulip.txt
+}
+
 download_repos
 create_repos_list
 download_open_pulls_for_all_repos
